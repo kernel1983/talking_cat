@@ -21,10 +21,15 @@ var audioInput = null,
     inputPoint = null,
     meter = null,
     audioRecorder = null;
+
+var dryGain = audioContext.createGain();
+var wetGain = audioContext.createGain();
+
 var rafID = null;
 var analyserContext = null;
 var canvasWidth, canvasHeight;
-var recIndex = 0;
+// var recIndex = 0;
+var next_rec_start_time = 0;
 
 var jungleEffect = new Jungle(audioContext);
 
@@ -34,19 +39,35 @@ var jungleEffect = new Jungle(audioContext);
 - "Monitor input" switch
 */
 
+function crossfade(value) {
+  // equal-power crossfade
+  var gain1 = Math.cos(value * 0.5*Math.PI);
+  var gain2 = Math.cos((1.0-value) * 0.5*Math.PI);
+
+  dryGain.gain.value = gain1;
+  wetGain.gain.value = gain2;
+}
+
 function gotBuffers(buffers) {
     // console.log(buffers);
-    // console.log(buffers[0].length);
+    // console.log(buffers[0].length/ audioContext.sampleRate);
+    next_rec_start_time += (buffers[0].length/ audioContext.sampleRate)*1000+500;
     var buffer = audioContext.createBuffer(2, buffers[0].length, audioContext.sampleRate);
     buffer.copyToChannel(buffers[0], 0, 0);
     buffer.copyToChannel(buffers[1], 1, 0);
 
     jungleEffect.output.connect(audioContext.destination);
+    jungleEffect.setPitchOffset(0.75);
+
+    // wetGain.connect(jungleEffect.input);
+    // dryGain.connect(jungleEffect.input);
+    // crossfade(0);
 
     var source = audioContext.createBufferSource();
     source.buffer = buffer;
+    // source.connect(dryGain);
+    // source.connect(wetGain);
     source.connect(jungleEffect.input);
-    source.connect(audioContext.destination);
     source.start();
 
     // var canvas = document.getElementById( "wavedisplay" );
@@ -63,21 +84,21 @@ function gotBuffers(buffers) {
     // alert(recIndex);
 // }
 
-function toggleRecording(e) {
-    if (e.classList.contains("recording")) {
-        // stop recording
-        audioRecorder.stop();
-        e.classList.remove("recording");
-        audioRecorder.getBuffers(gotBuffers);
-    } else {
-        // start recording
-        if (!audioRecorder)
-            return;
-        e.classList.add("recording");
-        audioRecorder.clear();
-        audioRecorder.record();
-    }
-}
+// function toggleRecording(e) {
+//     if (e.classList.contains("recording")) {
+//         // stop recording
+//         audioRecorder.stop();
+//         e.classList.remove("recording");
+//         audioRecorder.getBuffers(gotBuffers);
+//     } else {
+//         // start recording
+//         if (!audioRecorder)
+//             return;
+//         e.classList.add("recording");
+//         audioRecorder.clear();
+//         audioRecorder.record();
+//     }
+// }
 
 // function convertToMono(input) {
 //     var splitter = audioContext.createChannelSplitter(2);
@@ -95,22 +116,24 @@ function cancelAnalyserUpdates() {
 }
 
 function updateAnalysers(time) {
+    // console.log(time/1000);
     if (!audioRecorder)
         return;
     if (meter.checkClipping()) {
-        if (!audioRecorder.recording()){
+        if (next_rec_start_time < time && !audioRecorder.recording()){
             // e.classList.add("recording");
             // start recording
             audioRecorder.clear();
             audioRecorder.record();
-            console.log("audioRecorder.recording", audioRecorder.recording());
+            console.log("audioRecorder.record()");
         }
     } else {
         if (audioRecorder.recording()){
+            next_rec_start_time = time;
             // e.classList.remove("recording");
             // stop recording
             audioRecorder.stop();
-            console.log("gotBuffers()");
+            console.log("play()");
             audioRecorder.getBuffers(gotBuffers);
         }
     }
@@ -177,7 +200,7 @@ function gotStream(stream) {
 //    audioInput = convertToMono( input );
 
     // Create a new volume meter and connect it.
-    meter = createAudioMeter(audioContext, 0.98, 0.95, 1000);
+    meter = createAudioMeter(audioContext, 0.08, 0.35, 1000);
     audioInput.connect(meter);
 
     analyserNode = audioContext.createAnalyser();
