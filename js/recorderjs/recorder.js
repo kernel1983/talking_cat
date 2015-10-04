@@ -60,6 +60,10 @@ DEALINGS IN THE SOFTWARE.
       }
     }
 
+    this.recording = function(){
+      return recording;
+    }
+
     this.record = function(){
       recording = true;
     }

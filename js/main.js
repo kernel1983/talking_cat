@@ -19,6 +19,7 @@ var audioContext = new AudioContext();
 var audioInput = null,
     realAudioInput = null,
     inputPoint = null,
+    meter = null,
     audioRecorder = null;
 var rafID = null;
 var analyserContext = null;
@@ -94,6 +95,26 @@ function cancelAnalyserUpdates() {
 }
 
 function updateAnalysers(time) {
+    if (!audioRecorder)
+        return;
+    if (meter.checkClipping()) {
+        if (!audioRecorder.recording()){
+            // e.classList.add("recording");
+            // start recording
+            audioRecorder.clear();
+            audioRecorder.record();
+            console.log("audioRecorder.recording", audioRecorder.recording());
+        }
+    } else {
+        if (audioRecorder.recording()){
+            // e.classList.remove("recording");
+            // stop recording
+            audioRecorder.stop();
+            console.log("gotBuffers()");
+            audioRecorder.getBuffers(gotBuffers);
+        }
+    }
+
     if (!analyserContext) {
         var canvas = document.getElementById("analyser");
         canvasWidth = canvas.width;
@@ -154,6 +175,10 @@ function gotStream(stream) {
     audioInput.connect(inputPoint);
 
 //    audioInput = convertToMono( input );
+
+    // Create a new volume meter and connect it.
+    meter = createAudioMeter(audioContext, 0.98, 0.95, 1000);
+    audioInput.connect(meter);
 
     analyserNode = audioContext.createAnalyser();
     analyserNode.fftSize = 2048;
