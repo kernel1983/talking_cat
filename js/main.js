@@ -34,7 +34,7 @@ var jungleEffect = new Jungle(audioContext);
 - "Monitor input" switch
 */
 
-function gotBuffers( buffers ) {
+function gotBuffers(buffers) {
     // console.log(buffers);
     // console.log(buffers[0].length);
     var buffer = audioContext.createBuffer(2, buffers[0].length, audioContext.sampleRate);
@@ -57,18 +57,18 @@ function gotBuffers( buffers ) {
     // audioRecorder.exportWAV( doneEncoding );
 }
 
-// function doneEncoding( blob ) {
+// function doneEncoding(blob) {
     // Recorder.setupDownload( blob, "myRecording" + ((recIndex<10)?"0":"") + recIndex + ".wav" );
     // recIndex++;
     // alert(recIndex);
 // }
 
-function toggleRecording( e ) {
+function toggleRecording(e) {
     if (e.classList.contains("recording")) {
         // stop recording
         audioRecorder.stop();
         e.classList.remove("recording");
-        audioRecorder.getBuffers( gotBuffers );
+        audioRecorder.getBuffers(gotBuffers);
     } else {
         // start recording
         if (!audioRecorder)
@@ -79,18 +79,18 @@ function toggleRecording( e ) {
     }
 }
 
-function convertToMono( input ) {
-    var splitter = audioContext.createChannelSplitter(2);
-    var merger = audioContext.createChannelMerger(2);
-
-    input.connect( splitter );
-    splitter.connect( merger, 0, 0 );
-    splitter.connect( merger, 0, 1 );
-    return merger;
-}
+// function convertToMono(input) {
+//     var splitter = audioContext.createChannelSplitter(2);
+//     var merger = audioContext.createChannelMerger(2);
+//
+//     input.connect( splitter );
+//     splitter.connect(merger, 0, 0);
+//     splitter.connect(merger, 0, 1);
+//     return merger;
+// }
 
 function cancelAnalyserUpdates() {
-    window.cancelAnimationFrame( rafID );
+    window.cancelAnimationFrame(rafID);
     rafID = null;
 }
 
@@ -153,18 +153,18 @@ function updateAnalysers(time) {
     rafID = window.requestAnimationFrame( updateAnalysers );
 }
 
-function toggleMono() {
-    if (audioInput != realAudioInput) {
-        audioInput.disconnect();
-        realAudioInput.disconnect();
-        audioInput = realAudioInput;
-    } else {
-        realAudioInput.disconnect();
-        audioInput = convertToMono( realAudioInput );
-    }
-
-    audioInput.connect(inputPoint);
-}
+// function toggleMono() {
+//     if (audioInput != realAudioInput) {
+//         audioInput.disconnect();
+//         realAudioInput.disconnect();
+//         audioInput = realAudioInput;
+//     } else {
+//         realAudioInput.disconnect();
+//         audioInput = convertToMono( realAudioInput );
+//     }
+//
+//     audioInput.connect(inputPoint);
+// }
 
 function gotStream(stream) {
     inputPoint = audioContext.createGain();
