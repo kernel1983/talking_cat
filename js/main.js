@@ -34,12 +34,12 @@ var recIndex = 0;
 function gotBuffers( buffers ) {
     // console.log(buffers);
     // console.log(buffers[0].length);
-    var play = audioContext.createBuffer(2, buffers[0].length, audioContext.sampleRate);
-    play.copyToChannel(buffers[0], 0, 0);
-    play.copyToChannel(buffers[1], 1, 0);
+    var buffer = audioContext.createBuffer(2, buffers[0].length, audioContext.sampleRate);
+    buffer.copyToChannel(buffers[0], 0, 0);
+    buffer.copyToChannel(buffers[1], 1, 0);
 
     var source = audioContext.createBufferSource();
-    source.buffer = play;
+    source.buffer = buffer;
     source.connect(audioContext.destination);
     source.start();
 
