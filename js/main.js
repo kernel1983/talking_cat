@@ -25,6 +25,8 @@ var analyserContext = null;
 var canvasWidth, canvasHeight;
 var recIndex = 0;
 
+var jungleEffect = new Jungle(audioContext);
+
 /* TODO:
 
 - offer mono option
@@ -38,8 +40,11 @@ function gotBuffers( buffers ) {
     buffer.copyToChannel(buffers[0], 0, 0);
     buffer.copyToChannel(buffers[1], 1, 0);
 
+    jungleEffect.output.connect(audioContext.destination);
+
     var source = audioContext.createBufferSource();
     source.buffer = buffer;
+    source.connect(jungleEffect.input);
     source.connect(audioContext.destination);
     source.start();
 
