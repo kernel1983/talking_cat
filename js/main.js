@@ -52,6 +52,10 @@ function gotBuffers(buffers) {
     // console.log(buffers);
     // console.log(buffers[0].length/ audioContext.sampleRate);
     next_rec_start_time += (buffers[0].length/ audioContext.sampleRate)*1000+500;
+    setTimeout(function(){
+        document.getElementById("cat1").style.display = "none";
+        document.getElementById("cat2").style.display = "block";
+    }, (buffers[0].length/ audioContext.sampleRate)*1000);
     var buffer = audioContext.createBuffer(2, buffers[0].length, audioContext.sampleRate);
     buffer.copyToChannel(buffers[0], 0, 0);
     buffer.copyToChannel(buffers[1], 1, 0);
@@ -126,6 +130,8 @@ function updateAnalysers(time) {
             audioRecorder.clear();
             audioRecorder.record();
             console.log("audioRecorder.record()");
+            // document.getElementById("cat1").style.display = "block";
+            // document.getElementById("cat2").style.display = "none";
         }
     } else {
         if (audioRecorder.recording()){
@@ -135,6 +141,8 @@ function updateAnalysers(time) {
             audioRecorder.stop();
             console.log("play()");
             audioRecorder.getBuffers(gotBuffers);
+            document.getElementById("cat1").style.display = "block";
+            document.getElementById("cat2").style.display = "none";
         }
     }
 

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Audio Recorder</title>
+    <title>Talking Cat</title>
 
     <script src="js/recorderjs/recorder.js"></script>
     <script src="js/jungle.js"></script>
@@ -12,7 +12,7 @@
     html { overflow: hidden; }
     body {
         font: 14pt Arial, sans-serif;
-        background: lightgrey;
+        background: black;
         display: flex;
         flex-direction: column;
         height: 100vh;
@@ -21,10 +21,10 @@
     }
     canvas {
         display: inline-block;
-        background: #202020;
+        /*background: #202020;*/
         width: 95%;
         height: 45%;
-        box-shadow: 0px 0px 10px blue;
+        /*box-shadow: 0px 0px 10px blue;*/
     }
     #controls {
         display: flex;
@@ -51,18 +51,21 @@
         flex-direction: column;
         justify-content: space-around;
         align-items: center;
+        margin: auto;
     }
     @media (orientation: landscape) {
         body { flex-direction: row;}
         #controls { flex-direction: column; height: 100%; width: 10%;}
-        #viz { height: 100%; width: 90%;}
+        #viz { height: 60%; width: 40%;}
     }
 
     </style>
 </head>
 <body>
     <div id="viz">
-        <canvas id="analyser" width="1024" height="500"></canvas>
+        <img id="cat1" src="/img/1.png" style="width:605px; height:361px; display:none;" />
+        <img id="cat2" src="/img/2.jpg" style="width:605px; height:361px;" />
+        <canvas id="analyser" width="200" height="100"></canvas>
         <!-- <canvas id="wavedisplay" width="1024" height="500"></canvas> -->
     </div>
     <!-- <div id="controls">
